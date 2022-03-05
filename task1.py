@@ -1,16 +1,18 @@
 import numpy as np
 
 def gradient_descent_method():
+    np 
     print("gradient descent")
 
-def newton_method(x0: float, a: float, b: float, c: float, d: float):
+def newton_method_fx(x0: float, a: float, b: float, c: float, d: float):
     xn = x0
     (stopping_condition, stopping_value) = choose_stopping_conditions
     if stopping_condition == 1: 
         for _ in range(stopping_value):
             xn = xn - f(xn, a, b, c, d) / f_prime(xn, a, b, c)
     elif stopping_condition == 2:
-        while         
+        while abs(xn) > stopping_value:
+            xn = xn - f(xn, a, b, c, d) / f_prime(xn, a, b, c)             
     return (xn, f(xn, a, b, c, d))
 
 def f(x, a, b, c, d):
@@ -63,7 +65,7 @@ def choose_stopping_conditions():
         print("You did not provide integer!")
 
 def main():
-    (a, b) = newton_method(5, 3, 4, 6, 2)
+    #(a, b) = newton_method(5, 3, 4, 6, 2)
     print(a, b)
     # while(True):
     #     print_welcoming_messages()
