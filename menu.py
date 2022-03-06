@@ -1,4 +1,3 @@
-from secrets import choice
 import newton
 import gradient_descent
 import input_validator
