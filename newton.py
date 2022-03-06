@@ -1,9 +1,8 @@
 import functions
 import menu
 
-def execute(x0: float, a: float, b: float, c: float, d: float):
+def execute_fx(x0: float, a: float, b: float, c: float, d: float, stopping_condition: int, stopping_value: int):
     xn = x0
-    (stopping_condition, stopping_value) = menu.choose_stopping_conditions()
     if stopping_condition == 1: 
         for _ in range(stopping_value):
             xn = xn - functions.f(xn, a, b, c, d) / functions.f_prime(xn, a, b, c)
@@ -11,3 +10,5 @@ def execute(x0: float, a: float, b: float, c: float, d: float):
         while abs(xn) > stopping_value:
             xn = xn - functions.f(xn, a, b, c, d) / functions.f_prime(xn, a, b, c)             
     return (xn, functions.f(xn, a, b, c, d))
+
+# def execute_gx():
