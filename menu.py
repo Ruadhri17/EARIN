@@ -2,6 +2,8 @@ import newton
 import gradient_descent
 import input_validator
 import numpy as np
+from sys import platform
+import os
 
 PROVIDE_CHOICE_MSG = "Provide your choice: \n"
 MAX_NUMBER_OF_ITERATIONS_MSG = "Provide maximum number of iterations: \n"
@@ -37,7 +39,7 @@ def print_stopping_conditions_options():
     print("1. Maximum number of iterations.")
     print("2. Desired value.") 
     print("3. Maximum computation time.")
-    print("4. Return to previous menu.")
+    print("4. Exit.")
     print("--------------------------------------------------------------------------------")
 
 def print_functions_options():
@@ -45,11 +47,15 @@ def print_functions_options():
     print("Please choose the function you want to optimize.")
     print("1. F(x) = ax^3 + bx^2 + cx + d")
     print("2. G(x) = c + b'x + x'Ax") 
-    print("3. Return to previous menu.")
+    print("3. Exit.")
     print("--------------------------------------------------------------------------------")
 
 def choose_restart_method():
-    return input_validator.validate_boolean_choice_input(RESTART_MODE_MSG)
+    while True:
+        user_choice = input_validator.validate_boolean_choice_input(RESTART_MODE_MSG)
+        if user_choice:
+            break
+    return user_choice
 
 def provide_restart_repetitions(restart_method):
     if restart_method == "y" or restart_method == "yes":
@@ -67,13 +73,39 @@ def choose_method():
     return choice_value
 
 def choose_stopping_condition():
-    choice_value = input_validator.validate_integer_input(PROVIDE_CHOICE_MSG) 
-    if choice_value == 1 or choice_value == 2 or choice_value == 3 :
-        return choice_value
-    elif choice_value == 4:
-        print_main_menu()
-    else:
-        print(WRONG_OPTION_CHOICE_MSG)
+    stopping_condition = 0
+    while True:
+        choice_value = input_validator.validate_integer_input(PROVIDE_CHOICE_MSG) 
+        if choice_value == 1 or choice_value == 2 or choice_value == 3 :
+            stopping_condition = choice_value
+            break
+        elif choice_value == 4:
+            exit(0)
+        else:
+            print(WRONG_OPTION_CHOICE_MSG)
+    return stopping_condition
+
+def choose_stopping_value(stopping_condition_choice):
+    stopping_value = 0
+    while True:
+        if stopping_condition_choice == 1:
+            choice_value = input_validator.validate_integer_input(MAX_NUMBER_OF_ITERATIONS_MSG)
+            if choice_value:
+                stopping_value = choice_value
+                break 
+        elif stopping_condition_choice == 2:
+            choice_value = input_validator.validate_integer_input(MAX_NUMBER_OF_ITERATIONS_MSG)
+            if choice_value:
+                stopping_value = choice_value
+                break 
+        elif stopping_condition_choice == 3:
+            choice_value = input_validator.validate_integer_input(MAX_NUMBER_OF_ITERATIONS_MSG)
+            if choice_value:
+                stopping_value = choice_value
+                break 
+        else:
+            print(WRONG_OPTION_CHOICE_MSG)
+    return stopping_value
 
 def provide_max_number_of_iterations():
     while True:
@@ -102,7 +134,7 @@ def choose_function():
         if function_choice == 1 or function_choice == 2:
             break
         elif function_choice == 3:
-            print_main_menu()
+            exit(0)
             break
         else:
             print(WRONG_OPTION_CHOICE_MSG)
@@ -159,3 +191,9 @@ def provide_coefficients_gx():
             break
     
     return (A, b, c, d, x)
+
+def clear_screen():
+    if platform == "linux" or platform == "darwin":
+        os.system("clear")
+    elif platform == "win32":
+        os.system('cls')
