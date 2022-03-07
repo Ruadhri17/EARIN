@@ -1,7 +1,7 @@
 import functions
 import menu
 
-def execute_fx(x0: float, a: float, b: float, c: float, d: float, stopping_condition: int, stopping_value: int):
+def execute_fx(x0: float, a: float, b: float, c: float, d: float, stopping_condition: int, stopping_value):
     xn = x0
     if stopping_condition == 1: 
         for _ in range(stopping_value):
