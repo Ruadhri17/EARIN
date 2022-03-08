@@ -14,6 +14,16 @@ def validate_integer_input(input_msg):
     except ValueError:
         print("You did not provide integer!")
 
+def validate_positive_integer_input(input_msg):
+    try:
+        choice_value = int(input(input_msg))
+        if (choice_value > 0):
+            return choice_value
+        else:
+            print("It is not positive integer, try again!")
+    except ValueError:
+        print("You did not provide positive integer!")
+
 def validate_boolean_choice_input(input_msg):
     choice_value = input(input_msg)
     if choice_value.lower() == "y" or choice_value.lower() == "yes" or choice_value.lower() == "n" or choice_value.lower() == "no":

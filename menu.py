@@ -1,3 +1,4 @@
+from pickle import TRUE
 import newton
 import gradient_descent
 import input_validator
@@ -8,10 +9,11 @@ import os
 PROVIDE_CHOICE_MSG = "Provide your choice: \n"
 MAX_NUMBER_OF_ITERATIONS_MSG = "Provide maximum number of iterations: \n"
 DESIRED_VALUE_MSG = "Provide desired value: \n"
-MAX_COMPUTATION_TIME_MSG = "Provide maximum computation time: \n"
+MAX_COMPUTATION_TIME_MSG = "Provide maximum computation time (seconds): \n"
 WRONG_OPTION_CHOICE_MSG = "The provided option does not exist!"
 RESTART_MODE_MSG = "Do you want to use restart mode? Provide option in y/n format: \n"
 RESTART_MODE_REPETITIONS_MSG = "How many times do you want to repeat calculations?  \n"
+
 PROVIDE_FUNCTION_CHOICE_MSG = "Provide number representing which function you choose: \n"
 PROVIDE_COEFFICIENT_A_MSG_FOR_FX = "Provide coefficient a for F(x) function: \n"
 PROVIDE_COEFFICIENT_B_MSG_FOR_FX = "Provide coefficient b for F(x) function: \n"
@@ -58,8 +60,14 @@ def choose_restart_method():
     return user_choice
 
 def provide_restart_repetitions(restart_method):
+    repetitions = 1
     if restart_method == "y" or restart_method == "yes":
-        input_validator.validate_integer_input(RESTART_MODE_REPETITIONS_MSG)
+        while True:
+            additional_repetitions = input_validator.validate_integer_input(RESTART_MODE_REPETITIONS_MSG)
+            if additional_repetitions:
+                repetitions += additional_repetitions
+                break;
+    return repetitions
 
 def choose_method(): 
     while True:
@@ -94,12 +102,12 @@ def choose_stopping_value(stopping_condition_choice):
                 stopping_value = choice_value
                 break 
         elif stopping_condition_choice == 2:
-            choice_value = input_validator.validate_integer_input(MAX_NUMBER_OF_ITERATIONS_MSG)
+            choice_value = input_validator.validate_number_input(DESIRED_VALUE_MSG)
             if choice_value:
                 stopping_value = choice_value
                 break 
         elif stopping_condition_choice == 3:
-            choice_value = input_validator.validate_integer_input(MAX_NUMBER_OF_ITERATIONS_MSG)
+            choice_value = input_validator.validate_integer_input(MAX_COMPUTATION_TIME_MSG)
             if choice_value:
                 stopping_value = choice_value
                 break 
@@ -135,7 +143,6 @@ def choose_function():
             break
         elif function_choice == 3:
             exit(0)
-            break
         else:
             print(WRONG_OPTION_CHOICE_MSG)
     return function_choice
