@@ -19,4 +19,4 @@ def g_first_gradient(x, A, b, c):
     return np.gradient(g(x, A, b, c))
 
 def g_second_gradient(x, A, b, c):
-    return np.gradient(g_first_gradient(x, A, b, c))
+    return np.gradient(g(x, A, b, c), 2)

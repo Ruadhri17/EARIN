@@ -24,7 +24,7 @@ PROVIDE_X_FOR_FX_MSG = "Provide x value for F(x) function: \n"
 PROVIDE_COEFFICIENT_A_MSG_FOR_GX = "Provide element of matrix A: \n"
 PROVIDE_COEFFICIENT_B_MSG_FOR_GX = "Provide element of vector b: \n"
 PROVIDE_COEFFICIENT_C_MSG_FOR_GX = "Provide scalar c: \n"
-PROVIDE_COEFFICIENT_D_MSG_FOR_GX = "Provide size of vector b: \n"
+PROVIDE_COEFFICIENT_D_MSG_FOR_GX = "Provide size of vectors / matrices: \n"
 PROVIDE_X_FOR_GX_MSG = "Provide initial vector x: \n"
 
 def print_main_menu():
@@ -177,24 +177,24 @@ def provide_coefficients_fx():
 
 def provide_coefficients_gx():
     while True:
-        x = input_validator.validate_vector_input(PROVIDE_X_FOR_GX_MSG, 0)
-        if x:
-            break
-    while True:
         d = input_validator.validate_integer_input(PROVIDE_COEFFICIENT_D_MSG_FOR_GX)
         if d:
             break
     while True:
+        x = np.array(input_validator.validate_vector_input(PROVIDE_X_FOR_GX_MSG, d))
+        if x.any():
+            break
+    while True:
         b = np.array(input_validator.validate_vector_input(PROVIDE_COEFFICIENT_B_MSG_FOR_GX, d))
-        if b:
+        if b.any():
             break
     while True:
         c = input_validator.validate_number_input(PROVIDE_COEFFICIENT_C_MSG_FOR_GX)
         if c:
             break
     while True:
-        A = input_validator.validate_matrix_input(PROVIDE_COEFFICIENT_A_MSG_FOR_GX, x.count())
-        if A:
+        A = input_validator.validate_positive_definite_matrix_input(PROVIDE_COEFFICIENT_A_MSG_FOR_GX, d)
+        if A.any():
             break
     
     return (A, b, c, d, x)
