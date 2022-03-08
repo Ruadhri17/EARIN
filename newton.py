@@ -6,28 +6,40 @@ def execute_fx(a: float, b: float, c: float, d: float, x0: float, stopping_condi
     xn = x0
     if stopping_condition == 1: 
         for _ in range(stopping_value):
-            xn = xn - functions.f_first_gradient(xn, a, b, c) / functions.f_second_gradient(xn, a, b)
+            if functions.f_second_derivative(xn, a, b) == 0:
+                break
+            xn = xn - functions.f_first_derivative(xn, a, b, c) / functions.f_second_derivative(xn, a, b)
     elif stopping_condition == 2:
-        while abs(xn) > stopping_value:
-            xn = xn - functions.f_first_gradient(xn, a, b, c) / functions.f_second_gradient(xn, a, b)   
+        while functions.f(xn, a, b, c, d) >= stopping_value:
+            if functions.f_second_derivative(xn, a, b) == 0:
+                break
+            xn = xn - functions.f_first_derivative(xn, a, b, c) / functions.f_second_derivative(xn, a, b)   
     elif stopping_condition == 3:
         t_end = time.time() + stopping_value
         print("Please wait for a while...")
         while time.time() < t_end:
-            xn = xn - functions.f_first_gradient(xn, a, b, c) / functions.f_second_gradient(xn, a, b)   
+            if functions.f_second_derivative(xn, a, b) == 0:
+                break
+            xn = xn - functions.f_first_derivative(xn, a, b, c) / functions.f_second_derivative(xn, a, b)   
     return (xn, functions.f(xn, a, b, c, d))
 
-def execute_gx(A, b: float, c: float, d: float, x0: float, stopping_condition: int, stopping_value):
+def execute_gx(A, b, c: float, x0, stopping_condition: int, stopping_value):
     xn = x0
     if stopping_condition == 1:
         for _ in range(stopping_value):
-            xn = xn - functions.g_first_gradient(xn, A, b, c) / functions.g_second_gradient(xn, A, b, c)
+            if np.any(functions.g_second_gradient(A)) == 0:
+                break
+            xn = xn - np.dot(np.linalg.inv(functions.g_second_gradient(A)), functions.g_first_gradient(xn, A, b))
     elif stopping_condition == 2:
-        while abs(xn) > stopping_value:
-            xn = xn - functions.g_first_gradient(xn, A, b, c) / functions.g_second_gradient(xn, A, b, c)
+        while functions.g(xn, A, b, c) >= stopping_value:
+            if np.any(functions.g_second_gradient(A)) == 0:
+                break 
+            xn = xn - np.dot(np.linalg.inv(functions.g_second_gradient(A)), functions.g_first_gradient(xn, A, b))
     elif stopping_condition == 3:
          t_end = time.time() + stopping_value
          print("Please wait for a while...")
          while time.time() < t_end:
-             xn = xn - functions.g_first_gradient(xn, A, b, c) / functions.g_second_gradient(xn, A, b, c)
+             if np.any(functions.g_second_gradient(A)) == 0:
+                break
+             xn = xn - np.dot(np.linalg.inv(functions.g_second_gradient(A)), functions.g_first_gradient(xn, A, b))
     return (xn, functions.g(xn, A, b, c))
