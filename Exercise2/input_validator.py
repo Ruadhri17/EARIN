@@ -39,8 +39,6 @@ def validate_vector_input(input_msg, vector_size):
     while True:
         try:
             vector_input = list(map(float, input(input_msg + str(vector_size) + " elements: ").strip().split()))
-            print(len(vector_input))
-            print(vector_size)
             if len(vector_input) == vector_size:
                 return vector_input
             elif len(vector_input) < vector_size:
@@ -50,14 +48,28 @@ def validate_vector_input(input_msg, vector_size):
         except ValueError:
             print("You did not give sufficient amount of values or your input is not a number, try again!")
 
-def validate_positive_definite_matrix_input(input_msg, matrix_size):
+def validate_matrix_input(input_msg, matrix_size):
     while True:
         try:
-            matrix_input = list(map(float, input(input_msg + str(matrix_size**2) + " elements: ").strip().split()))[:matrix_size**2]
+            matrix_input = list(map(float, input(input_msg + str(matrix_size**2) + " elements: ").strip().split()))
             matrix = np.array(matrix_input)
-            if np.all(np.linalg.eigvals(matrix.reshape(matrix_size, matrix_size)) > 0):
+            if matrix.size == matrix_size**2:
                 return matrix.reshape(matrix_size, matrix_size)
+            elif matrix.size < matrix_size**2:
+                print("You did not provide sufficient amount of numbers, try again!")
             else:
-                print("Your matrix is not positive definite, try again!")
+                print("You provided too much numbers, try again!")
         except ValueError:
-            print("You did not give sufficient amount of values or your input is not a number, try again!")
+            print("Your input is not a matrix of numbers, try again!")
+
+
+def validate_probability(input_msg):
+    while True:
+        try:
+            choice_value = float(input(input_msg))
+            if choice_value >= 0.0 and choice_value <= 1.0:
+                return choice_value
+            else:
+                print("It is not valid value for probability! Probability should belong to the range <0, 1>, try again!")
+        except ValueError:
+            print("It is not valid value for probability! Probability should belong to the range <0, 1>, try again!")

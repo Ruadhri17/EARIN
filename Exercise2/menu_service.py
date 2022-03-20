@@ -1,8 +1,10 @@
 import menu
-import genetic_algorithm
+# import genetic_algorithm
 
 def run_fx():
-    (A, b, c, problem_dimensionality, x) = menu.provide_coefficients_fx()
-    # (xn, gx) = genetic_algorithm(A, b, c, x)
-    # print("Found solution of x: ", xn)
-    # print("Function value: ", fx)
+    while True:
+        menu.clear_screen()
+        (searched_integers_range_power, population_size, crossover_probability, mutation_probability, algorithm_iterations) = menu.provide_algorithm_parameters()
+        (A, b, c, problem_dimensionality, x) = menu.provide_coefficients_fx()
+        if menu.finish_program():
+            exit(0)
