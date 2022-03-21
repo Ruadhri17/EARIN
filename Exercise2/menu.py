@@ -19,10 +19,10 @@ FINISH_PROGRAM_MSG = "Do you want to finish program(y/n)?: "
 
 def provide_coefficients_fx():
     problem_dimensionality = input_validator.validate_integer_input(PROVIDE_PROBLEM_DIMENSIONALITY_MSG_FOR_FX)
-    while True:
-        x = np.array(input_validator.validate_vector_input(PROVIDE_X_FOR_FX_MSG, problem_dimensionality))
-        if x.any():
-            break
+    # while True:
+    #     x = np.array(input_validator.validate_vector_input(PROVIDE_X_FOR_FX_MSG, problem_dimensionality))
+    #     if x.any():
+    #         break
     while True:
         b = np.array(input_validator.validate_vector_input(PROVIDE_COEFFICIENT_B_MSG_FOR_FX, problem_dimensionality))
         if b.any():
@@ -34,7 +34,7 @@ def provide_coefficients_fx():
         if A.any():
             break
     
-    return (A, b, c, problem_dimensionality, x)
+    return (A, b, c, problem_dimensionality)
 
 def provide_algorithm_parameters():
     searched_integers_range_power = input_validator.validate_positive_integer_input(PROVIDE_SEARCHED_INTEGERS_RANGE_POWER_MSG)
