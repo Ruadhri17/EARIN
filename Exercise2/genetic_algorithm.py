@@ -52,7 +52,7 @@ def crossover(first_parent, second_parent, crossover_probability):
     # Check vector size
     parent_dimension = len(first_parent)
     # Choose randomly crossover point
-    crossover_point = randint(0, first_parent[0].size)
+    crossover_point = randint(1, first_parent[0].size)
     # Determine if crossover will happen
     if uniform(0.0 , 1.0) > crossover_probability:
         return (first_parent, second_parent)
@@ -60,16 +60,17 @@ def crossover(first_parent, second_parent, crossover_probability):
     first_child = []
     second_child = []
     # exchange genomes of both parents in crossover point
-    first_child = first_parent[:crossover_point] + second_parent[crossover_point:]
-    second_child= second_parent[:crossover_point] + first_parent[crossover_point:]
-    print("Crossover point" + str(crossover_point))
+    for i in range(parent_dimension):
+        first_child.append(np.append(first_parent[i][:crossover_point].copy(), [second_parent[i][crossover_point:].copy()]))
+        second_child.append(np.append(second_parent[i][:crossover_point].copy(), [first_parent[i][crossover_point:].copy()]))
+
     return (first_child, second_child)
 
 def genetic_algorithm(A, b, c, d, n, population_size, mutation_probability, crossover_probability, number_of_iterations):
     population = create_population(population_size, n, d)
-    next_generation = []
-    print(len(population))
+    
     for _ in range(number_of_iterations):
+        next_generation = []
         for _ in range(int(len(population)/2) - 1):
             # Choose parent (roulette wheel selection) 
             first_parent = roulette_wheel_selection(population, A, b, c)
@@ -79,11 +80,7 @@ def genetic_algorithm(A, b, c, d, n, population_size, mutation_probability, cros
             # After Crossing preserve child for next generations
             next_generation.append(first_child)
             next_generation.append(second_child)
-            print(first_parent)
-            print(second_parent)
-            print(first_child)
-            print(second_child)
-            print("\n\n\n")
+            
     return next_generation
 
 # [[array(1,0,1), array(1,1,0)], [array(1,1,1), array(0,1,0)]]
