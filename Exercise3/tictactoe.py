@@ -1,13 +1,11 @@
 from cmath import inf
+from math import inf as infinity
+import menu
 
 AI_PLAYER = -1
 HUMAN_PLAYER = 1
-board = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0],
-]
-def human_player_turn():
+
+def human_player_turn(current_board):
     human_move = 0
     possible_moves = {
         1: [0, 0], 2: [0, 1], 3: [0, 2],
@@ -19,7 +17,7 @@ def human_player_turn():
         try:
             human_move = int(input('Choose field by typing number from 1 to 9: '))
             human_move_coordinates = possible_moves[human_move]
-            valid_move = make_move(human_move_coordinates[0], human_move_coordinates[1], HUMAN_PLAYER)
+            valid_move = make_move(current_board, human_move_coordinates[0], human_move_coordinates[1], HUMAN_PLAYER)
             if not valid_move:
                 print('Your move was invalid! Choose value from 1 to 9, try again.')
                 human_move = 0
@@ -29,49 +27,86 @@ def human_player_turn():
         except (KeyError, ValueError):
             print('Your move was invalid! Choose value from 1 to 9, try again.')
 
-def ai_player_turn():
-    depth = len(find_empty_fields())
-    if depth == 0 or ending_condition():
+def ai_player_turn(current_board):
+    depth = len(find_empty_fields(current_board))
+    if depth == 0 or ending_condition(current_board):
         return
-
-    ai_player_move = minimax(depth, alpha, beta, AI_PLAYER)
+    is_maximazing_player = True if depth % 2 != 0 else False
+    ai_player_move = minimax(current_board, depth, -infinity, infinity, is_maximazing_player, AI_PLAYER)
+    print(ai_player_move)
     make_move(ai_player_move[0], ai_player_move[1], AI_PLAYER)
 
-def ending_condition():
-    return
+def ending_condition(current_board):
+    print(current_board)
+    for i in range(2):
+        # check all vertical lines 
+        if current_board[0][i] != 0 and current_board[0][i] == current_board[1][i] == current_board[2][i]:
+            return current_board[0][i]
+        # check all horizontal lines 
+        if current_board[i][0] != 0 and current_board[i][0] == current_board[i][1] == current_board[i][2]:
+            return current_board[i][0]
+    # Check first diagonal
+    if current_board[0][0] != 0 and current_board[0][0] == current_board[1][1] == current_board[2][2]:
+        return current_board[0][0] 
+    # Check second diagonal
+    if current_board[0][2] != 0 and current_board[0][2] == current_board[1][1] == current_board[2][0]:     
+        return current_board[0][2]  
+    # check if there are still empty fields when no one wins
+    if len(find_empty_fields(current_board)) == 0:
+        return 0 
+    # return None if players can still play 
+    return None
     
-def minimax(depth, alpha, beta, is_maximazing_player):
-    
-    if is_maximazing_player == AI_PLAYER:
+def minimax(current_board, depth, alpha, beta, is_maximazing_player, current_player):
+    if depth == 0 or ending_condition(current_board):
+        return ending_condition(current_board)
+    if is_maximazing_player:
+        best_move = [-100, -100, infinity]
+
+        max_value = infinity
         
-        max_value = inf
-        
-        for child in find_empty_fields():
+        for child in find_empty_fields(current_board):
+            x, y = child[0], child[1]
+            current_board[x][y] = current_player
+            # value = minimax(child, depth - 1, alpha, beta, False)
+            value = minimax(current_board, depth - 1, alpha, beta, False, -current_player)
+            current_board[x][y] = 0
+            best_move[0], best_move[1] = x, y
+            print(best_move)
+            if(value[2] < best_move[2]):
+                best_move = value
+            # best_move[2] = max(value[2], best_move[2])
+            # alpha = max(alpha, value[2])
             
-            value = minimax(child, depth - 1, alpha, beta, False)
+            # if beta <= alpha:
+            #     break
             
-            max_value = max(value, max_value)
-            alpha = max(alpha, value)
-            
-            if beta <= alpha:
-                break
-            
-            return max_value
+            # return max_value
+            return best_move
     else:
-        min_value = -inf
-        for child in find_empty_fields():
-            
-            value = minimax(child, depth - 1, alpha, beta, True)
-            
-            min_value = min(value, min_value)
-            beta = min(beta, value)
+        best_move = [-100, -100, -infinity]
 
-            if beta <= alpha:
-                break
+        min_value = -infinity
+        for child in find_empty_fields(current_board):
+            x, y = child[0], child[1]
+            current_board[x][y] = current_player
+            # value = minimax(child, depth - 1, alpha, beta, True)
+            value = minimax(current_board, depth - 1, alpha, beta, True, -current_player)
+            current_board[x][y] = 0
+            best_move[0], best_move[1] = x, y
 
-            return min_value
+            if(value[2] > best_move[2]):
+                best_move = value
+            # best_move[2] = min(value[2], best_move[2])
+            # beta = min(beta, value[2])
+
+            # if beta <= alpha:
+            #     break
+
+            # return min_value
+            return best_move
                     
-def print_board(ai_player_mark, human_player_mark):
+def print_board(current_board, ai_player_mark, human_player_mark):
     values = {
         -1: ai_player_mark,
         0: ' ',
@@ -79,31 +114,76 @@ def print_board(ai_player_mark, human_player_mark):
     }
     row_border_line = '---------------'
     print(row_border_line)
-    for row in board:
+    for row in current_board:
         for field in row:
             symbol = values[field]
             print(f'| {symbol} |', end='')
         print('\n' + row_border_line)
 
-def make_move(x_coordinate, y_coordinate, current_player):
-    if validate_move(x_coordinate, y_coordinate):
-        board[x_coordinate][y_coordinate] = current_player
+def make_move(current_board, x_coordinate, y_coordinate, current_player):
+    if validate_move(current_board, x_coordinate, y_coordinate):
+        current_board[x_coordinate][y_coordinate] = current_player
         return True
     else:
         return False
 
-def validate_move(x_coordinate, y_coordinate):
-    if [x_coordinate, y_coordinate] in find_empty_fields():
+def validate_move(current_board, x_coordinate, y_coordinate):
+    if [x_coordinate, y_coordinate] in find_empty_fields(current_board):
         return True
     else:
         return False
 
-def find_empty_fields():
+def find_empty_fields(current_board):
     empty_fields = []
-    for x, row in enumerate(board):
+    for x, row in enumerate(current_board):
         for y, field in enumerate(row):
             if field == 0:
                 empty_fields.append([x, y])
 
     return empty_fields
 
+def play():
+    human_score , player_score = 0 , 0
+    game_board = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+    ]
+    print(game_board[2][0])
+    human_player_mark = menu.choose_mark()
+    if human_player_mark == 'X':
+        ai_player_mark = 'O'
+    else:
+        ai_player_mark = 'X'
+
+    human_player_first = False
+    human_player_order = menu.choose_order()
+    if human_player_order == 'Y':
+        human_player_first = True
+
+    
+    while len(find_empty_fields(game_board)) > 0:
+        
+        menu.clear_screen()
+        menu.print_info(ai_player_mark, human_player_mark)
+        print_board(game_board, ai_player_mark, human_player_mark)
+        
+        # if tictactoe.ending_condition():
+        #     exit(0)
+
+        if human_player_first:
+            human_player_turn(game_board)
+            ai_player_turn(game_board)
+        else:
+            ai_player_turn(game_board)
+            human_player_turn(game_board)
+    
+    menu.clear_screen()
+    menu.print_info(ai_player_mark, human_player_mark)
+    print_board(ai_player_mark, human_player_mark)
+        
+    # player with X starts
+    # if X player is AI it chooses randomly from 5 winning positions (corners and middle one)
+    # if O player is AI it checks for good move and choose one 
+    # repeat until game stoping condition
+    return
