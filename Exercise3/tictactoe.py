@@ -33,11 +33,9 @@ def ai_player_turn(current_board):
         return
     is_maximazing_player = True if depth % 2 != 0 else False
     ai_player_move = minimax(current_board, depth, -infinity, infinity, is_maximazing_player, AI_PLAYER)
-    print(ai_player_move)
-    make_move(ai_player_move[0], ai_player_move[1], AI_PLAYER)
+    make_move(current_board, ai_player_move[0], ai_player_move[1], AI_PLAYER)
 
 def ending_condition(current_board):
-    print(current_board)
     for i in range(2):
         # check all vertical lines 
         if current_board[0][i] != 0 and current_board[0][i] == current_board[1][i] == current_board[2][i]:
@@ -59,52 +57,38 @@ def ending_condition(current_board):
     
 def minimax(current_board, depth, alpha, beta, is_maximazing_player, current_player):
     if depth == 0 or ending_condition(current_board):
-        return ending_condition(current_board)
-    if is_maximazing_player:
-        best_move = [-100, -100, infinity]
+        result = ending_condition(current_board)
+        return [-100, -100, result]
 
-        max_value = infinity
+    if is_maximazing_player:
+        best_move = [-100, -100, -infinity]
+
+        max_value = -infinity
         
         for child in find_empty_fields(current_board):
             x, y = child[0], child[1]
             current_board[x][y] = current_player
-            # value = minimax(child, depth - 1, alpha, beta, False)
-            value = minimax(current_board, depth - 1, alpha, beta, False, -current_player)
+            value = minimax(current_board, depth - 1, alpha, beta, not is_maximazing_player, -current_player)
             current_board[x][y] = 0
             best_move[0], best_move[1] = x, y
-            print(best_move)
-            if(value[2] < best_move[2]):
-                best_move = value
-            # best_move[2] = max(value[2], best_move[2])
-            # alpha = max(alpha, value[2])
-            
-            # if beta <= alpha:
-            #     break
-            
-            # return max_value
-            return best_move
-    else:
-        best_move = [-100, -100, -infinity]
 
-        min_value = -infinity
+            if value[2] < best_move[2]:
+                best_move = value
+        return best_move
+    else:
+        best_move = [-100, -100, infinity]
+
+        min_value = infinity
         for child in find_empty_fields(current_board):
             x, y = child[0], child[1]
             current_board[x][y] = current_player
-            # value = minimax(child, depth - 1, alpha, beta, True)
-            value = minimax(current_board, depth - 1, alpha, beta, True, -current_player)
+            value = minimax(current_board, depth - 1, alpha, beta, not is_maximazing_player, -current_player)
             current_board[x][y] = 0
             best_move[0], best_move[1] = x, y
 
-            if(value[2] > best_move[2]):
+            if value[2] > best_move[2]:
                 best_move = value
-            # best_move[2] = min(value[2], best_move[2])
-            # beta = min(beta, value[2])
-
-            # if beta <= alpha:
-            #     break
-
-            # return min_value
-            return best_move
+        return best_move
                     
 def print_board(current_board, ai_player_mark, human_player_mark):
     values = {
@@ -149,7 +133,6 @@ def play():
         [0, 0, 0],
         [0, 0, 0],
     ]
-    print(game_board[2][0])
     human_player_mark = menu.choose_mark()
     if human_player_mark == 'X':
         ai_player_mark = 'O'
@@ -180,7 +163,7 @@ def play():
     
     menu.clear_screen()
     menu.print_info(ai_player_mark, human_player_mark)
-    print_board(ai_player_mark, human_player_mark)
+    print_board(game_board, ai_player_mark, human_player_mark)
         
     # player with X starts
     # if X player is AI it chooses randomly from 5 winning positions (corners and middle one)
