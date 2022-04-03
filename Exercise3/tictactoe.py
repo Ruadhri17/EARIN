@@ -25,14 +25,13 @@ def human_player_turn(current_board):
                 print('Your move was invalid! Choose value from 1 to 9, try again.')
                 human_move = 0
         except (EOFError, KeyboardInterrupt):
-            print('\nThank you for the game!')
+            print('\nGame Terminated!')
             exit()
         except (KeyError, ValueError):
             print('Your move was invalid! Choose value from 1 to 9, try again.')
 
 def ai_player_turn(current_board, is_maximizing):
-    depth = len(find_empty_fields(current_board))
-    score = minimax(current_board, depth, -inf, inf, is_maximizing)
+    score = minimax(current_board, -inf, inf, is_maximizing)
     make_move(current_board, score[0], score[1], AI_PLAYER)
 
 def ending_condition(current_board):
@@ -55,33 +54,43 @@ def ending_condition(current_board):
     # return None if players can still play 
     return None
     
-def minimax(current_board, depth, alpha, beta, is_maximizing):
+def minimax(current_board, alpha, beta, is_maximizing):
+    # Check current state of board
     result = ending_condition(current_board)
+    # If game is finished return proper game status: -1 if AI lost 0 if game is lost and 1 if AI won
     if result is not None:
         return [-1, -1, result]
-
+    # When AI try to maximize result
     if(is_maximizing):
+        # Set initial coordinates to impossible movement and best score to worst possible scenario 
         best_score = [-1, -1, -inf]
+        # Try every possible combination 
         for i in range(3):
             for j in range(3):
+                # check if tile is already used
                 if current_board[i][j] == 0:
                     current_board[i][j] = AI_PLAYER
-                    score = minimax(current_board, depth - 1, alpha, beta, not is_maximizing)
+                    # Pass the board with possible movement to calculate next movements
+                    score = minimax(current_board, alpha, beta, not is_maximizing)
+                    # Restore board to pre-testing state
                     current_board[i][j] = 0
                     score[0], score[1] = i, j
+                    # Check if received output is better than present score (outcome), if so, replace it
                     if score[2] > best_score[2]:
                         best_score = score
+                    # Compare result to alpha value, if new alpha is set and its value is bigger than beta, algorithm prune rest of branches
                     alpha = max(best_score[2], alpha)
                     if alpha >= beta:
                         break
         return best_score
+    # When AI try to minimize own result (AI assume that opponent made the best move)
     else:
         best_score = [-1, -1, inf]
         for i in range(3):
             for j in range(3):
                 if current_board[i][j] == 0:
                     current_board[i][j] = HUMAN_PLAYER
-                    score = minimax(current_board, depth - 1, alpha, beta, not is_maximizing)
+                    score = minimax(current_board, alpha, beta, not is_maximizing)
                     current_board[i][j] = 0
                     score[0], score[1] = i, j
                     if score[2] < best_score[2]:
@@ -106,6 +115,7 @@ def print_board(current_board, ai_player_mark, human_player_mark):
         print('\n' + row_border_line)
 
 def make_move(current_board, x_coordinate, y_coordinate, current_player):
+    # If board field is free, place current player symbol
     if validate_move(current_board, x_coordinate, y_coordinate):
         current_board[x_coordinate][y_coordinate] = current_player
         return True
@@ -113,12 +123,14 @@ def make_move(current_board, x_coordinate, y_coordinate, current_player):
         return False
 
 def validate_move(current_board, x_coordinate, y_coordinate):
+    # Returns true if field is empty otherwise returns false
     if [x_coordinate, y_coordinate] in find_empty_fields(current_board):
         return True
     else:
         return False
 
 def find_empty_fields(current_board):
+    # look for all empty fields on board
     empty_fields = []
     for x, row in enumerate(current_board):
         for y, field in enumerate(row):
@@ -128,31 +140,31 @@ def find_empty_fields(current_board):
     return empty_fields
 
 def play():
-    human_score , player_score = 0 , 0
+    # initial state of board
     game_board = [
         [0, 0, 0],
         [0, 0, 0],
         [0, 0, 0],
     ]
     
+    # Player chooses game symbol
     human_player_mark = menu.choose_mark()
     if human_player_mark == 'X':
         ai_player_mark = 'O'
     else:
         ai_player_mark = 'X'
 
+    # Player chooses order
     human_player_first = False
     human_player_order = menu.choose_order()
     if human_player_order == 'Y':
         human_player_first = True
 
-    
-    while len(find_empty_fields(game_board)) > 0 and not ending_condition(game_board):
+    # Play until all fields are filled or game-winning condition is fullfilled
+    while ending_condition(game_board) is None:
         
         menu.clear_screen()
-        menu.print_info(ai_player_mark, human_player_mark)        
-        # if tictactoe.ending_condition():
-        #     exit(0)
+        menu.print_info(ai_player_mark, human_player_mark)
 
         if human_player_first:
             print_board(game_board, ai_player_mark, human_player_mark)
@@ -166,5 +178,10 @@ def play():
     menu.clear_screen()
     menu.print_info(ai_player_mark, human_player_mark)
     print_board(game_board, ai_player_mark, human_player_mark)
-        
-    return
+
+    if(ending_condition(game_board) == 1):
+        print("AI won!")
+    elif(ending_condition(game_board) == -1):
+        print("You have won! (Something is wrong)")
+    else:
+        print("Draw!")

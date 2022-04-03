@@ -17,7 +17,7 @@ def choose_mark():
             else:
                 print('Incorrect choice! Choose X or O, try again.')
         except (EOFError, KeyboardInterrupt):
-            print('\nThank you for the game!')
+            print('\nGame Terminated!')
             exit()
         except (KeyError, ValueError):
             print('Incorrect choice! Choose X or O, try again.')
@@ -26,8 +26,8 @@ def choose_mark():
     return human_player_choice
 
 def print_info(ai_player_mark, human_player_mark):
-    print('Human player ' + human_player_mark)
-    print('AI player ' + ai_player_mark)
+    print('Human player: ' + human_player_mark)
+    print('AI player: ' + ai_player_mark)
 
 def choose_order():
     human_player_choice = ''
@@ -39,7 +39,7 @@ def choose_order():
             else:
                 print('Incorrect choice! Choose Y or N, try again.')
         except (EOFError, KeyboardInterrupt):
-            print('\nThank you for the game!')
+            print('\nGame Terminated!')
             exit()
         except (KeyError, ValueError):
             print('Incorrect choice! Choose Y or N, try again.')
