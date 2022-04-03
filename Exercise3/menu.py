@@ -26,8 +26,8 @@ def choose_mark():
     return human_player_choice
 
 def print_info(ai_player_mark, human_player_mark):
-    print('Human player ' + human_player_mark + ', Score: 0\n')
-    print('AI player ' + ai_player_mark + ', Score: 0\n')
+    print('Human player ' + human_player_mark)
+    print('AI player ' + ai_player_mark)
 
 def choose_order():
     human_player_choice = ''

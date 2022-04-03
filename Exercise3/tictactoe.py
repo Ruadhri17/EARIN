@@ -1,9 +1,8 @@
-from cmath import inf
-from math import inf as infinity
+from math import inf
 import menu
 
-AI_PLAYER = -1
-HUMAN_PLAYER = 1
+AI_PLAYER = 1
+HUMAN_PLAYER = -1
 
 def human_player_turn(current_board):
     human_move = 0
@@ -12,6 +11,10 @@ def human_player_turn(current_board):
         4: [1, 0], 5: [1, 1], 6: [1, 2],
         7: [2, 0], 8: [2, 1], 9: [2, 2]
     }
+
+    result = ending_condition(current_board)
+    if result is not None:
+        return
 
     while human_move < 1 or human_move > 9:
         try:
@@ -27,16 +30,13 @@ def human_player_turn(current_board):
         except (KeyError, ValueError):
             print('Your move was invalid! Choose value from 1 to 9, try again.')
 
-def ai_player_turn(current_board):
+def ai_player_turn(current_board, is_maximizing):
     depth = len(find_empty_fields(current_board))
-    if depth == 0 or ending_condition(current_board):
-        return
-    is_maximazing_player = True if depth % 2 != 0 else False
-    ai_player_move = minimax(current_board, depth, -infinity, infinity, is_maximazing_player, AI_PLAYER)
-    make_move(current_board, ai_player_move[0], ai_player_move[1], AI_PLAYER)
+    score = minimax(current_board, depth, -inf, inf, is_maximizing)
+    make_move(current_board, score[0], score[1], AI_PLAYER)
 
 def ending_condition(current_board):
-    for i in range(2):
+    for i in range(3):
         # check all vertical lines 
         if current_board[0][i] != 0 and current_board[0][i] == current_board[1][i] == current_board[2][i]:
             return current_board[0][i]
@@ -55,46 +55,47 @@ def ending_condition(current_board):
     # return None if players can still play 
     return None
     
-def minimax(current_board, depth, alpha, beta, is_maximazing_player, current_player):
-    if depth == 0 or ending_condition(current_board):
-        result = ending_condition(current_board)
-        return [-100, -100, result]
+def minimax(current_board, depth, alpha, beta, is_maximizing):
+    result = ending_condition(current_board)
+    if result is not None:
+        return [-1, -1, result]
 
-    if is_maximazing_player:
-        best_move = [-100, -100, -infinity]
-
-        max_value = -infinity
-        
-        for child in find_empty_fields(current_board):
-            x, y = child[0], child[1]
-            current_board[x][y] = current_player
-            value = minimax(current_board, depth - 1, alpha, beta, not is_maximazing_player, -current_player)
-            current_board[x][y] = 0
-            best_move[0], best_move[1] = x, y
-
-            if value[2] < best_move[2]:
-                best_move = value
-        return best_move
+    if(is_maximizing):
+        best_score = [-1, -1, -inf]
+        for i in range(3):
+            for j in range(3):
+                if current_board[i][j] == 0:
+                    current_board[i][j] = AI_PLAYER
+                    score = minimax(current_board, depth - 1, alpha, beta, not is_maximizing)
+                    current_board[i][j] = 0
+                    score[0], score[1] = i, j
+                    if score[2] > best_score[2]:
+                        best_score = score
+                    alpha = max(best_score[2], alpha)
+                    if alpha >= beta:
+                        break
+        return best_score
     else:
-        best_move = [-100, -100, infinity]
+        best_score = [-1, -1, inf]
+        for i in range(3):
+            for j in range(3):
+                if current_board[i][j] == 0:
+                    current_board[i][j] = HUMAN_PLAYER
+                    score = minimax(current_board, depth - 1, alpha, beta, not is_maximizing)
+                    current_board[i][j] = 0
+                    score[0], score[1] = i, j
+                    if score[2] < best_score[2]:
+                        best_score = score
+                    beta = max(best_score[2], beta)
+                    if alpha >= beta:
+                        break
+        return best_score
 
-        min_value = infinity
-        for child in find_empty_fields(current_board):
-            x, y = child[0], child[1]
-            current_board[x][y] = current_player
-            value = minimax(current_board, depth - 1, alpha, beta, not is_maximazing_player, -current_player)
-            current_board[x][y] = 0
-            best_move[0], best_move[1] = x, y
-
-            if value[2] > best_move[2]:
-                best_move = value
-        return best_move
-                    
 def print_board(current_board, ai_player_mark, human_player_mark):
     values = {
-        -1: ai_player_mark,
+        -1: human_player_mark,
         0: ' ',
-        1: human_player_mark
+        1: ai_player_mark
     }
     row_border_line = '---------------'
     print(row_border_line)
@@ -133,6 +134,7 @@ def play():
         [0, 0, 0],
         [0, 0, 0],
     ]
+    
     human_player_mark = menu.choose_mark()
     if human_player_mark == 'X':
         ai_player_mark = 'O'
@@ -145,28 +147,24 @@ def play():
         human_player_first = True
 
     
-    while len(find_empty_fields(game_board)) > 0:
+    while len(find_empty_fields(game_board)) > 0 and not ending_condition(game_board):
         
         menu.clear_screen()
-        menu.print_info(ai_player_mark, human_player_mark)
-        print_board(game_board, ai_player_mark, human_player_mark)
-        
+        menu.print_info(ai_player_mark, human_player_mark)        
         # if tictactoe.ending_condition():
         #     exit(0)
 
         if human_player_first:
+            print_board(game_board, ai_player_mark, human_player_mark)
             human_player_turn(game_board)
-            ai_player_turn(game_board)
+            ai_player_turn(game_board, True)
         else:
-            ai_player_turn(game_board)
+            ai_player_turn(game_board, True)
+            print_board(game_board, ai_player_mark, human_player_mark)
             human_player_turn(game_board)
     
     menu.clear_screen()
     menu.print_info(ai_player_mark, human_player_mark)
     print_board(game_board, ai_player_mark, human_player_mark)
         
-    # player with X starts
-    # if X player is AI it chooses randomly from 5 winning positions (corners and middle one)
-    # if O player is AI it checks for good move and choose one 
-    # repeat until game stoping condition
     return
