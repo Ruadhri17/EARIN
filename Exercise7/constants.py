@@ -1,0 +1,12 @@
+YES = ['y', 'yes', 'Y', 'Yes']
+LINE = '------------------------------------------------------------------------------'
+FILENAME = 'flu.json'
+MCMC = 'mcmc'
+MARKOV_BLANKET = 'markov_blanket'
+EVIDENCE_WITH_STEPS = '- Provide evidence with steps (ie: Flu:T): '
+PROVIDE_NODE = '- Provide the node (e.g., Flu): '
+NEW_VARIABLES = '- Do you want to provide new variables (y/n)?:'
+PROVIDE_EVIDENCE = '- Provide evidence (e.g., Flu:T): '
+PROVIDE_NUMBER_OF_STEPS = '- Provide number of steps: '
+INCORRECT_DATA = '\nWarning: Provided data is not correct, try again!\n'
+PROVIDE_SIMPLE_QUERY = '- Provide simmple query (e.g., Flu, HighFever): '

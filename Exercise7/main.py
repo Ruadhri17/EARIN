@@ -1,8 +1,8 @@
-import bayesian as b
-import json
+from menu import run_menu
 
 def main():
-    pass
+    run_menu()
+
 
 if __name__ == "__main__":
     main()
